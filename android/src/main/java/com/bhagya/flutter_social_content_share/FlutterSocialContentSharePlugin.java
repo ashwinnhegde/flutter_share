@@ -62,6 +62,7 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
   private Bitmap socialImageBitmap;
   private Intent shareIntent;
   private static final String INSTAGRAM_PACKAGE_NAME = "com.instagram.android";
+  private static final String SNAPCHAT_PACKAGE_NAME = "com.snapchat.android";
   private static final String WHATSAPP_PACKAGE_NAME = "com.whatsapp";
 
   private String type;
@@ -116,6 +117,9 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
           case "ShareType.instagramWithImageUrl":
             getImageBitmap(imageUrl, result);
             break;
+          case "ShareType.snapchat":
+            shareOnSnapchat(imageUrl, result);
+            break;
           default:
             result.notImplemented();
             break;
@@ -166,6 +170,30 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
             }).check();
   }
 
+  private void getPermissionToStoreDataSnapChat(final Result result) {
+    Dexter.withContext(activity).withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .withListener(new PermissionListener() {
+              @Override
+              public void onPermissionGranted(PermissionGrantedResponse response) {
+                if (snapChatInstalled()) {
+                  shareFileToSnapchat(result);
+                }else{
+                  result.success("Snapchat app is not installed on your device");
+                }
+
+              }
+
+              @Override
+              public void onPermissionDenied(PermissionDeniedResponse response) {
+                result.success("Permission Denied!");
+              }
+
+              @Override
+              public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                token.continuePermissionRequest();
+              }
+            }).check();
+  }
   private void shareFileToInstagram(Result result) {
     Uri backgroundAssetUri = getImageUriFromBitmap(result,socialImageBitmap);
     if (backgroundAssetUri == null) {
@@ -190,6 +218,40 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
     chooserIntent.putExtra(Intent.EXTRA_TEXT, quote);
 
     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{storiesIntent});
+
+    try {
+      result.success("Success");
+      activity.startActivity(chooserIntent);
+    } catch (ActivityNotFoundException e) {
+      e.printStackTrace();
+      result.success("Failure");
+    }
+  }
+
+  private void shareFileToSnapchat(Result result) {
+    Uri backgroundAssetUri = getImageUriFromBitmap(result,socialImageBitmap);
+    if (backgroundAssetUri == null) {
+      result.success("Failure");
+      return;
+    }
+
+    Intent feedIntent = new Intent(Intent.ACTION_SEND);
+    feedIntent.setType("image/*");
+    feedIntent.putExtra(Intent.EXTRA_STREAM, backgroundAssetUri);
+    feedIntent.putExtra(Intent.EXTRA_TEXT, quote);
+    feedIntent.setPackage(SNAPCHAT_PACKAGE_NAME);
+
+//    //story
+//    Intent storiesIntent = new Intent("com.instagram.share.ADD_TO_STORY");
+//    storiesIntent.setDataAndType(backgroundAssetUri, "jpg");
+//    storiesIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//    storiesIntent.setPackage(INSTAGRAM_PACKAGE_NAME);
+//    storiesIntent.putExtra(Intent.EXTRA_TEXT, quote);
+
+    Intent chooserIntent = Intent.createChooser(feedIntent, "Share via Snapchat");
+    chooserIntent.putExtra(Intent.EXTRA_TEXT, quote);
+
+//    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{storiesIntent});
 
     try {
       result.success("Success");
@@ -268,6 +330,20 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
     return false;
   }
 
+  private boolean snapChatInstalled() {
+    try {
+      if (activity != null) {
+        activity.getPackageManager()
+                .getApplicationInfo(SNAPCHAT_PACKAGE_NAME, 0);
+        return true;
+      } else {
+        Log.d("App","Snapchat app is not installed on your device");
+      }
+    } catch (PackageManager.NameNotFoundException e) {
+      return false;
+    }
+    return false;
+  }
 
   /**
    * share on Whatsapp
@@ -334,6 +410,24 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
     }
   }
 
+  private void shareOnSnapchat(String path, final Result result){
+    Glide.with(activity)
+            .asBitmap()
+            .load(path)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(new CustomTarget<Bitmap>() {
+              @Override
+              public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                socialImageBitmap = resource;
+                getPermissionToStoreDataSnapChat(result);
+              }
+
+              @Override
+              public void onLoadCleared(@Nullable Drawable placeholder) {
+              }
+            });
+  }
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
