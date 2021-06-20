@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-enum ShareType { facebookWithoutImage, instagramWithImageUrl, more }
+enum ShareType { facebookWithoutImage, instagramWithImageUrl, share }
 
 class FlutterSocialContentShare {
   static const MethodChannel _channel =
