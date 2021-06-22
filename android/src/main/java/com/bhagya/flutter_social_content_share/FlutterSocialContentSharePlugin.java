@@ -3,6 +3,7 @@ package com.bhagya.flutter_social_content_share;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -239,14 +240,9 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
     feedIntent.setType("image/*");
     feedIntent.putExtra(Intent.EXTRA_STREAM, backgroundAssetUri);
     feedIntent.putExtra(Intent.EXTRA_TEXT, quote);
-    feedIntent.setPackage(SNAPCHAT_PACKAGE_NAME);
-
-//    //story
-//    Intent storiesIntent = new Intent("com.instagram.share.ADD_TO_STORY");
-//    storiesIntent.setDataAndType(backgroundAssetUri, "jpg");
-//    storiesIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//    storiesIntent.setPackage(INSTAGRAM_PACKAGE_NAME);
-//    storiesIntent.putExtra(Intent.EXTRA_TEXT, quote);
+//    feedIntent.setPackage(SNAPCHAT_PACKAGE_NAME);
+    ComponentName intentComponent = new ComponentName(SNAPCHAT_PACKAGE_NAME, "com.snapchat.android.LandingPageActivity");
+    feedIntent.setComponent(intentComponent);
 
     Intent chooserIntent = Intent.createChooser(feedIntent, "Share via Snapchat");
     chooserIntent.putExtra(Intent.EXTRA_TEXT, quote);
