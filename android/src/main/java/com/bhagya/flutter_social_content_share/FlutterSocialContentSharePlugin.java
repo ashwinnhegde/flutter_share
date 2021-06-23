@@ -230,11 +230,11 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
   }
 
   private void shareFileToSnapchat(Result result) {
-    Uri backgroundAssetUri = getImageUriFromBitmap(result,socialImageBitmap);
-    if (backgroundAssetUri == null) {
-      result.success("Failure");
-      return;
-    }
+//    Uri backgroundAssetUri = getImageUriFromBitmap(result,socialImageBitmap);
+//    if (backgroundAssetUri == null) {
+//      result.success("Failure");
+//      return;
+//    }
     Intent intent = new Intent(Intent.ACTION_SEND);
     intent.setType("text/plain");
     intent.putExtra(android.content.Intent.EXTRA_TEXT, quote);
@@ -413,22 +413,23 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
   }
 
   private void shareOnSnapchat(String path, final Result result){
-    Glide.with(activity)
-            .asBitmap()
-            .load(path)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(new CustomTarget<Bitmap>() {
-              @Override
-              public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                socialImageBitmap = resource;
-                getPermissionToStoreDataSnapChat(result);
-              }
-
-              @Override
-              public void onLoadCleared(@Nullable Drawable placeholder) {
-              }
-            });
+    shareFileToSnapchat(result);
+//    Glide.with(activity)
+//            .asBitmap()
+//            .load(path)
+//            .diskCacheStrategy(DiskCacheStrategy.NONE)
+//            .skipMemoryCache(true)
+//            .into(new CustomTarget<Bitmap>() {
+//              @Override
+//              public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                socialImageBitmap = resource;
+//                getPermissionToStoreDataSnapChat(result);
+//              }
+//
+//              @Override
+//              public void onLoadCleared(@Nullable Drawable placeholder) {
+//              }
+//            });
   }
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
