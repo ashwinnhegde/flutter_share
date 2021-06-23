@@ -235,17 +235,23 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
       result.success("Failure");
       return;
     }
-
-    Intent feedIntent = new Intent(Intent.ACTION_SEND);
-    feedIntent.setType("image/*");
-    feedIntent.putExtra(Intent.EXTRA_STREAM, backgroundAssetUri);
-    feedIntent.putExtra(Intent.EXTRA_TEXT, quote);
-//    feedIntent.setPackage(SNAPCHAT_PACKAGE_NAME);
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(android.content.Intent.EXTRA_TEXT, quote);
     ComponentName intentComponent = new ComponentName(SNAPCHAT_PACKAGE_NAME, "com.snapchat.android.LandingPageActivity");
-    feedIntent.setComponent(intentComponent);
 
-    Intent chooserIntent = Intent.createChooser(feedIntent, "Share via Snapchat");
-    chooserIntent.putExtra(Intent.EXTRA_TEXT, quote);
+    intent.setComponent(intentComponent);
+
+//    Intent feedIntent = new Intent(Intent.ACTION_SEND);
+//    feedIntent.setType("image/*");
+//    feedIntent.putExtra(Intent.EXTRA_STREAM, backgroundAssetUri);
+//    feedIntent.putExtra(Intent.EXTRA_TEXT, quote);
+//    feedIntent.setPackage(SNAPCHAT_PACKAGE_NAME);
+//    ComponentName intentComponent = new ComponentName(SNAPCHAT_PACKAGE_NAME, "com.snapchat.android.LandingPageActivity");
+//    feedIntent.setComponent(intentComponent);
+
+    Intent chooserIntent = Intent.createChooser(intent, "Share via Snapchat");
+//    chooserIntent.putExtra(Intent.EXTRA_TEXT, quote);
 
 //    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{storiesIntent});
 
