@@ -261,6 +261,7 @@ public class FlutterSocialContentSharePlugin implements FlutterPlugin, MethodCal
     } catch (ActivityNotFoundException e) {
       e.printStackTrace();
       result.success("Failure");
+      activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.snapchat.android")));
     }
   }
 

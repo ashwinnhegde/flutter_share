@@ -24,6 +24,8 @@ class FlutterSocialContentShare {
       "url": url,
       "imageName": imageName,
       "imageUrl": imageUrl
+      .++++.
+
     };
     final String message = await _channel.invokeMethod('share', params);
     return message;
